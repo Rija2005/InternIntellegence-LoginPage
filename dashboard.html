@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.7/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>Dashboard</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <h1 class="logo">YourApp</h1>
+                <ul class="nav-links">
+                    <li><a href="#" id="profile">Profile</a></li>
+                    <li><a href="#" id="settings">Settings</a></li>
+                    <li><a href="#" id="logout">Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="welcome-message">
+            <h2>Welcome to the Dashboard!</h2>
+            <p>Explore your account, manage settings, and stay connected.</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 YourApp. All rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        import { auth, signOut } from "./firebase.js";
+
+        // Logout Functionality
+        document.getElementById("logout").addEventListener("click", () => {
+            signOut(auth)
+                .then(() => {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Logged Out",
+                        text: "You have been successfully logged out.",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+
+                    // Redirect to login page
+                    setTimeout(() => {
+                        window.location.href = "index.html"; // Replace with your login page URL
+                    }, 2000);
+                })
+                .catch((error) => {
+                    console.error("Logout Error:", error.message);
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Logout Failed",
+                        text: "An error occurred while logging out. Please try again.",
+                    });
+                });
+        });
+    </script>
+</body>
+</html>

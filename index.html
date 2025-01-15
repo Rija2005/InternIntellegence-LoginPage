@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.7/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>Login</title>
+</head>
+<body>
+    <div class="container">
+        <!-- Image Section -->
+        <div class="cover">
+          <img src="cubic.jpg" alt="Login Illustration">
+          <div class="text">
+            <h1 class="text-1">Welcome Back!</h1>
+            <p class="text-2">Secure and seamless login experience</p>
+          </div>
+        </div>
+    
+        <!-- Login Form -->
+        <div class="forms">
+          <div class="form-content">
+            <div class="login-form">
+              <div class="title">Login</div>
+              <form action="#">
+                <div class="input-boxes">
+                  <!-- Email Field -->
+                  <div class="input-box">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email1" placeholder="Enter your email" required>
+                  </div>
+                  <!-- Password Field -->
+                  <div class="input-box">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password1" placeholder="Enter your password" required>
+                  </div>
+                  <!-- Forgot Password -->
+                  <div class="text">
+                    <a href="#" style="color: #1bdf73;">Forgot password?</a>
+                  </div>
+                  <!-- Login Button -->
+                  <div class="button input-box">
+                    <input type="submit"  id="signin" value="Login">
+                  </div>
+                  <!-- Google Sign-In -->
+                  <div class="button google input-box">
+                    <input type="button" id="googleAuth" value="Sign in with Google">
+                  </div>
+                  <!-- Sign Up Link -->
+                  <div class="text sign-up-text">
+                    Don't have an account? <a href="#">Sign up now</a>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+   
+
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="app.js"></script>
+  
+</body>
+</html>
