@@ -1,105 +1,123 @@
-import {
-  auth,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
+import { 
+  auth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  db, 
+  doc, 
+  setDoc, 
+  getDocs, 
+  collection, 
+  deleteDoc 
 } from "./firebase.js";
 
-
-
-// Login with Email and Password
-const signIn = () => {
-  const email = document.getElementById("email1").value;
-  const password = document.getElementById("password1").value;
+// ✅ SIGN UP FUNCTION (Email & Password Only)
+let signUp = async () => {
+  let email = document.getElementById("email").value.trim();
+  let password = document.getElementById("password").value.trim();
 
   if (!email || !password) {
-    Swal.fire({
-      icon: "error",
-      title: "Missing Information",
-      text: "Please enter both email and password.",
-    });
+    alert("Please enter both email and password");
     return;
   }
 
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("Successfully Logged In:", user);
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-      // Display success message
-      Swal.fire({
-        icon: "success",
-        title: "Login Successful",
-        text: `Welcome back, ${user.email}!`,
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      // Redirect to another page (e.g., dashboard.html)
-      setTimeout(() => {
-        window.location.href = "dashboard.html"; // Change to your actual dashboard page
-      }, 2000);
-    })
-    .catch((error) => {
-      console.error("Error Code:", error.code);
-      console.error("Error Message:", error.message);
-
-      let errorMessage = "An error occurred. Please try again.";
-      if (error.code === "auth/user-not-found") {
-        errorMessage = "No user found with this email.";
-      } else if (error.code === "auth/wrong-password") {
-        errorMessage = "Incorrect password. Please try again.";
-      } else if (error.code === "auth/invalid-email") {
-        errorMessage = "Invalid email format.";
-      }
-
-      Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text: errorMessage,
-      });
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      uid: user.uid
     });
+
+    alert("Account created successfully!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert("Error: " + error.message);
+    console.error("Sign Up Error:", error);
+  }
 };
 
-// Google Authentication
-const googleSignIn = () => {
-  const provider = new GoogleAuthProvider();
+// ✅ LOGIN FUNCTION (Fixing auth/invalid-credential error)
+let logIn = async (event) => {
+  event.preventDefault();  // Prevent form refresh
+  let email = document.getElementById("email").value.trim();
+  let password = document.getElementById("password").value.trim();
 
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      console.log("Google Sign-In successful:", result.user);
+  if (!email || !password) {
+    alert("Please enter both email and password");
+    return;
+  }
 
-      Swal.fire({
-        icon: "success",
-        title: "Login Successful",
-        text: `Welcome back, ${result.user.displayName}!`,
-        showConfirmButton: false,
-        timer: 2000,
-      });
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log("User Logged In:", user);
+    
+    alert("Login Successful!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    console.error("Login Error:", error);
+    console.error(error)
+    
 
-      // Redirect to another page (e.g., dashboard.html)
-      setTimeout(() => {
-        window.location.href = "dashboard.html"; // Change to your actual dashboard page
-      }, 2000);
-    })
-    .catch((error) => {
-      console.error("Google Sign-In error:", error.message);
-
-      Swal.fire({
-        icon: "error",
-        title: "Google Sign-In Failed",
-        text: "An error occurred while signing in with Google.",
-      });
-    });
+    
+  }
 };
 
-// Event Listeners
-document.getElementById("signin").addEventListener("click", (e) => {
-  e.preventDefault(); // Prevent form submission
-  signIn();
-});
 
-document.getElementById("googleAuth").addEventListener("click", (e) => {
-  e.preventDefault(); // Prevent default button behavior
-  googleSignIn();
-});
+// ✅ GOOGLE SIGN-IN FUNCTION (Fixing Provider Import)
+let googleSignup = async () => {
+  const provider = new GoogleAuthProvider(); // Ensure the provider is instantiated inside the function
+
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      email: user.email
+    });
+
+    alert("Google Sign-In Successful!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    console.error("Google Sign-In Error:", error);
+    alert("Google Sign-In Failed: " + error.message);
+  }
+};
+
+// ✅ FETCH ALL USERS
+let getAllUsers = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    querySnapshot.forEach(doc => {
+      console.log(`${doc.id} => `, doc.data());
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+};
+
+// ✅ DELETE ACCOUNT FUNCTION
+let deleteAccount = async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("No user logged in!");
+      return;
+    }
+
+    await deleteDoc(doc(db, "users", user.uid));
+    alert("Account Deleted!");
+  } catch (error) {
+    console.error("Delete Account Error:", error);
+    alert("Failed to delete account: " + error.message);
+  }
+};
+
+// ✅ EVENT LISTENERS (Fixed Placement)
+document.getElementById("loginForm").addEventListener("submit", logIn);
+document.getElementById("googleAuth").addEventListener("click", googleSignup);
